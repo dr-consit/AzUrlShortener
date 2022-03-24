@@ -9,5 +9,7 @@ namespace Cloud5mins.domain
         public string Title { get; set; }
 
         public Schedule[] Schedules { get; set; }
+
+        public string Domain { get; set; }
     }
 }

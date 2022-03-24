@@ -33,6 +33,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text.Json;
+using System.Linq;
 
 namespace Cloud5mins.Function
 {
@@ -110,13 +111,15 @@ namespace Cloud5mins.Function
                 string longUrl = input.Url.Trim();
                 string vanity = string.IsNullOrWhiteSpace(input.Vanity) ? "" : input.Vanity.Trim();
                 string title = string.IsNullOrWhiteSpace(input.Title) ? "" : input.Title.Trim();
-
+                string domain = string.IsNullOrWhiteSpace(input.Domain) ? "" : input.Domain.Trim();
+                if (!config.GetValue<string[]>("customDomains").Contains(domain))
+                    domain = "";
 
                 ShortUrlEntity newRow;
 
                 if (!string.IsNullOrEmpty(vanity))
                 {
-                    newRow = new ShortUrlEntity(longUrl, vanity, title, input.Schedules);
+                    newRow = new ShortUrlEntity(longUrl, vanity, title, input.Schedules, domain);
                     if (await stgHelper.IfShortUrlEntityExist(newRow))
                     {
                         return new ConflictObjectResult(new{ Message = "This Short URL already exist."});
@@ -124,7 +127,7 @@ namespace Cloud5mins.Function
                 }
                 else
                 {
-                    newRow = new ShortUrlEntity(longUrl, await Utility.GetValidEndUrl(vanity, stgHelper), title, input.Schedules);
+                    newRow = new ShortUrlEntity(longUrl, await Utility.GetValidEndUrl(vanity, stgHelper), title, input.Schedules, domain);
                 }
 
                 await stgHelper.SaveShortUrlEntity(newRow);

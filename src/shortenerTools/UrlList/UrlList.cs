@@ -66,9 +66,11 @@ namespace Cloud5mins.Function
 
                 result.UrlList = await stgHelper.GetAllShortUrlEntities();
                 result.UrlList = result.UrlList.Where(p => !(p.IsArchived ?? false)).ToList();
-                var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+                //var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+                
                 foreach (ShortUrlEntity url in result.UrlList)
                 {
+                    var host = string.IsNullOrWhiteSpace(url.Domain) ? req.Host.Host : url.Domain;
                     url.ShortUrl = Utility.GetShortUrl(host, url.RowKey);
                 }
             }

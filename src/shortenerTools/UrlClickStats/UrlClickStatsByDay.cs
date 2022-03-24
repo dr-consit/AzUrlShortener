@@ -107,9 +107,10 @@ namespace Cloud5mins.Function
                                             .Select(stat => new ClickDate{
                                                 DateClicked = stat.Key.ToString("yyyy-MM-dd"),
                                                 Count = stat.Count()
-                                            }).OrderBy(s => DateTime.Parse(s.DateClicked).Date).ToList<ClickDate>(); 
+                                            }).OrderBy(s => DateTime.Parse(s.DateClicked).Date).ToList<ClickDate>();
 
-                var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+                //var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+                var host = string.IsNullOrEmpty(rawStats.FirstOrDefault()?.Domain) ? req.Host.Host: rawStats.FirstOrDefault().Domain;                
                 result.Url = Utility.GetShortUrl(host, input.Vanity);
             }
             catch (Exception ex)

@@ -42,6 +42,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text.Json;
+using System.Linq;
 
 namespace Cloud5mins.Function
 {
@@ -112,10 +113,14 @@ namespace Cloud5mins.Function
                     .AddEnvironmentVariables()
                     .Build();
 
+                input.Domain = string.IsNullOrWhiteSpace(input.Domain) ? "" : input.Domain.Trim();
+                if (!config.GetValue<string[]>("customDomains").Contains(input.Domain))
+                    input.Domain = "";
+
                 StorageTableHelper stgHelper = new StorageTableHelper(config["UlsDataStorage"]);
 
                 result = await stgHelper.UpdateShortUrlEntity(input);
-                var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+                var host = string.IsNullOrEmpty(result.Domain) ? req.Host.Host: result.Domain;
                 result.ShortUrl = Utility.GetShortUrl(host, result.RowKey);
 
             }

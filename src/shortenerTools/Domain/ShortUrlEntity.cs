@@ -8,11 +8,12 @@ namespace Cloud5mins.domain
     public class ShortUrlEntity : TableEntity
     {
         public string Url { get; set; }
+        public string Domain { get; set; }
         private string _activeUrl { get; set; }
 
         public string ActiveUrl { 
             get{
-                if(String.IsNullOrEmpty(_activeUrl) )
+                if(string.IsNullOrEmpty(_activeUrl) )
                     _activeUrl = GetActiveUrl();
                 return _activeUrl;
             }
@@ -31,7 +32,7 @@ namespace Cloud5mins.domain
         [IgnoreProperty]
         public Schedule[] Schedules { 
             get{
-                if(String.IsNullOrEmpty(SchedulesPropertyRaw))
+                if(string.IsNullOrEmpty(SchedulesPropertyRaw))
                     return null;
                 return JsonConvert.DeserializeObject<Schedule[]>(SchedulesPropertyRaw);
             } 
@@ -47,17 +48,12 @@ namespace Cloud5mins.domain
             Initialize(longUrl, endUrl, string.Empty, null);
         }
 
-        public ShortUrlEntity(string longUrl, string endUrl, Schedule[] schedules)
+        public ShortUrlEntity(string longUrl, string endUrl, string title, Schedule[] schedules, string domain)
         {
-            Initialize(longUrl, endUrl, string.Empty, schedules);
+            Initialize(longUrl, endUrl, title, schedules, domain);
         }
 
-        public ShortUrlEntity(string longUrl, string endUrl, string title, Schedule[] schedules)
-        {
-            Initialize(longUrl, endUrl, title, schedules);
-        }
-
-        private void Initialize(string longUrl, string endUrl, string title, Schedule[] schedules)
+        private void Initialize(string longUrl, string endUrl, string title, Schedule[] schedules, string domain = "")
         {
             PartitionKey = endUrl.First().ToString();
             RowKey = endUrl;
@@ -66,6 +62,7 @@ namespace Cloud5mins.domain
             Clicks = 0;
             IsArchived = false;
             Schedules = schedules;
+            Domain = domain;
         }
 
         public static ShortUrlEntity GetEntity(string longUrl, string endUrl, string title, Schedule[] schedules){

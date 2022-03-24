@@ -130,7 +130,8 @@ namespace Cloud5mins.domain
             ShortUrlEntity originalUrl = await GetShortUrlEntity(urlEntity);
             originalUrl.Url = urlEntity.Url;
             originalUrl.Title = urlEntity.Title;
-            originalUrl.Schedules = urlEntity.Schedules;           
+            originalUrl.Schedules = urlEntity.Schedules;
+            originalUrl.Domain = urlEntity.Domain;
 
             return await SaveShortUrlEntity(originalUrl);
          }
